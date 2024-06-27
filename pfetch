@@ -412,11 +412,12 @@ get_host() {
             # Despite what these files are called, version doesn't
             # always contain the version nor does name always contain
             # the name.
+			read -r vendor < /sys/devices/virtual/dmi/id/chassis_vendor
             read -r name    < /sys/devices/virtual/dmi/id/product_name
             read -r version < /sys/devices/virtual/dmi/id/product_version
             read -r model   < /sys/firmware/devicetree/base/model
 
-            host="$name $version $model"
+            host="$vendor $name $version $model"
         ;;
 
         (Darwin* | FreeBSD* | DragonFly*)
@@ -429,7 +430,10 @@ get_host() {
         ;;
 
         (OpenBSD*)
-            host=$(sysctl -n hw.version)
+			vendor = $(sysctl -n hw.vendor)
+			model = $(sysctl -n hw.model)
+			version = $(sysctl -n hw.version)
+			host="$vendor $model $version"
         ;;
 
         (*BSD* | Minix)
